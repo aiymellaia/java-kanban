@@ -5,7 +5,7 @@ public class Main {
         Task task = new Task("Переезд", "Собрать вещи", Status.NEW);
         manager.createTask(task);
 
-        Epic epic = new Epic("Переезд в новую квартиру", "Организация переезда");
+        Epic epic = new Epic("Переезд в новую квартиру", "Организация");
         manager.createEpic(epic);
 
         Subtask subtask1 = new Subtask("Упаковать книги", "Коробка для книг", Status.NEW, epic.getId());
