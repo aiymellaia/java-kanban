@@ -1,7 +1,13 @@
+package manager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import model.Epic;
+import model.Task;
+import model.Subtask;
+import model.Status;
 
 public class TaskManager {
     private Map<Integer, Task> tasks = new HashMap<>();
@@ -26,7 +32,7 @@ public class TaskManager {
     }
 
     public void createTask(Task task) {
-        task.id = generateId();
+        task.setId(generateId());
         tasks.put(task.getId(), task);
     }
 
@@ -54,7 +60,7 @@ public class TaskManager {
     }
 
     public void createEpic(Epic epic) {
-        epic.id = generateId();
+        epic.setId(generateId());
         epics.put(epic.getId(), epic);
     }
 
@@ -77,7 +83,6 @@ public class TaskManager {
         }
     }
 
-
     public List<Subtask> getAllSubtasks() {
         return new ArrayList<>(subtasks.values());
     }
@@ -86,7 +91,7 @@ public class TaskManager {
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtasks();
-            updateEpicStatus(epic);
+            epic.setStatus(Status.NEW);
         }
     }
 
@@ -95,12 +100,14 @@ public class TaskManager {
     }
 
     public void createSubtask(Subtask subtask) {
-        subtask.id = generateId();
         Epic epic = epics.get(subtask.getEpicId());
         if (epic != null) {
+            subtask.setId(generateId());
             subtasks.put(subtask.getId(), subtask);
             epic.addSubtaskId(subtask.getId());
             updateEpicStatus(epic);
+        } else {
+            System.out.println("Эпик не найден для подзадачи с id: " + subtask.getEpicId());
         }
     }
 
