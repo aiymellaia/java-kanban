@@ -10,13 +10,13 @@ class ManagersTest {
     void getDefault_shouldReturnInMemoryTaskManager() {
         TaskManager taskManager = Managers.getDefault();
         assertNotNull(taskManager, "TaskManager не должен быть null");
-        assertTrue(taskManager instanceof InMemoryTaskManager, "Должен быть InMemoryTaskManager");
+        assertInstanceOf(InMemoryTaskManager.class, taskManager, "Ожидается экземпляр InMemoryTaskManager");
     }
 
     @Test
     void getDefaultHistory_shouldReturnInMemoryHistoryManager() {
         HistoryManager historyManager = Managers.getDefaultHistory();
         assertNotNull(historyManager, "HistoryManager не должен быть null");
-        assertTrue(historyManager instanceof InMemoryHistoryManager, "Должен быть InMemoryHistoryManager");
+        assertInstanceOf(InMemoryHistoryManager.class, historyManager, "Ожидается экземпляр InMemoryHistoryManager");
     }
 }

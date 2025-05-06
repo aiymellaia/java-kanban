@@ -133,5 +133,32 @@ class InMemoryTaskManagerTest {
         assertEquals(0, savedEpic.getSubtaskIds().size());
         assertEquals(Status.NEW, savedEpic.getStatus());
     }
+
+    @Test
+    void equalTasks() {
+        Task task1 = new Task("Имя", "Описание", Status.NEW);
+        Task task2 = new Task("Другое имя", "Другое описание", Status.DONE);
+        task1.setId(1);
+        task2.setId(1);
+        assertEquals(task1, task2);
+    }
+
+    @Test
+    void equalSubtasks() {
+        Subtask sub1 = new Subtask("Подзадача 1", "Описание", Status.NEW, 1);
+        Subtask sub2 = new Subtask("Подзадача 2", "Другое описание", Status.DONE, 2);
+        sub1.setId(2);
+        sub2.setId(2);
+        assertEquals(sub1, sub2);
+    }
+
+    @Test
+    void equalEpics() {
+        Epic epic1 = new Epic("Эпик", "Описание");
+        Epic epic2 = new Epic("Другой эпик", "Другое описание");
+        epic1.setId(3);
+        epic2.setId(3);
+        assertEquals(epic1, epic2);
+    }
 }
 
