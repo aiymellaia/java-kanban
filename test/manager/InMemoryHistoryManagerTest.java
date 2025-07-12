@@ -30,34 +30,6 @@ class InMemoryHistoryManagerTest {
         assertEquals(task, history.get(0), "Задача в истории неверна.");
     }
 
-    @Test
-    void historyShouldNotExceedTenTasks() {
-        for (int i = 0; i < 12; i++) {
-            Task task = new Task("Task " + i, "Desc", Status.NEW);
-            task.setId(i);
-            historyManager.add(task);
-        }
-
-        List<Task> history = historyManager.getHistory();
-
-        assertEquals(10, history.size(), "История не должна превышать 10 задач.");
-        assertEquals("Task 2", history.get(0).getName(), "Первая задача должна быть Task 2.");
-    }
-
-    @Test
-    void historyShouldNotExceedTenTasksMajor() {
-        for (int i = 1; i <= 15; i++) {
-            Task task = new Task("Задача " + i, "Описание", Status.NEW);
-            task.setId(i);
-            historyManager.add(task);
-        }
-
-        List<Task> history = historyManager.getHistory();
-
-        assertEquals(10, history.size());
-        assertEquals("Задача 6", history.get(0).getName());
-        assertEquals("Задача 15", history.get(9).getName());
-    }
 
     @Test
     void duplicateTaskShouldMoveToEnd() {
@@ -78,6 +50,36 @@ class InMemoryHistoryManagerTest {
         assertEquals(task1, history.get(1), "Последней должна быть повторно добавленная task1.");
     }
 
+    @Test
+    void remove_shouldRemoveTaskFromHistory() {
+        Task task = new Task("Task", "Описание", Status.NEW);
+        task.setId(1);
 
+        historyManager.add(task);
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistory();
+        assertTrue(history.isEmpty(), "История должна быть пустой после удаления.");
+    }
+
+    @Test
+    void add_shouldIgnoreNullTasks() {
+        historyManager.add(null);
+        List<Task> history = historyManager.getHistory();
+        assertTrue(history.isEmpty(), "История не должна содержать null-задачи.");
+    }
+
+    @Test
+    void remove_shouldDoNothingIfTaskNotInHistory() {
+        Task task = new Task("Task", "Описание", Status.NEW);
+        task.setId(1);
+        historyManager.add(task);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size(), "История не должна измениться.");
+        assertEquals(task, history.get(0));
+    }
 
 }

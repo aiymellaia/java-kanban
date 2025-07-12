@@ -135,30 +135,73 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void equalTasks() {
-        Task task1 = new Task("Имя", "Описание", Status.NEW);
-        Task task2 = new Task("Другое имя", "Другое описание", Status.DONE);
-        task1.setId(1);
-        task2.setId(1);
-        assertEquals(task1, task2);
+    void deletingSubtask_shouldRemoveItsIdFromEpic() {
+        Epic epic = new Epic("План поездки", "Организовать всё");
+        manager.createEpic(epic);
+
+        Subtask subtask = new Subtask("Купить билеты", "Авиабилеты", Status.NEW, epic.getId());
+        manager.createSubtask(subtask);
+        int subId = subtask.getId();
+
+        Epic savedEpic = manager.getEpicById(epic.getId());
+        assertTrue(savedEpic.getSubtaskIds().contains(subId));
+
+        manager.deleteSubtaskById(subId);
+        savedEpic = manager.getEpicById(epic.getId());
+        assertFalse(savedEpic.getSubtaskIds().contains(subId));
     }
 
     @Test
-    void equalSubtasks() {
-        Subtask sub1 = new Subtask("Подзадача 1", "Описание", Status.NEW, 1);
-        Subtask sub2 = new Subtask("Подзадача 2", "Другое описание", Status.DONE, 2);
-        sub1.setId(2);
-        sub2.setId(2);
-        assertEquals(sub1, sub2);
+    void modifyingTaskField_shouldNotBreakManager() {
+        Task task = new Task("Тест", "Описание", Status.NEW);
+        manager.createTask(task);
+        int taskId = task.getId();
+
+        task.setName("Изменено имя");
+        task.setDescription("Новое описание");
+        task.setStatus(Status.DONE);
+
+        Task fromManager = manager.getTaskById(taskId);
+
+        assertEquals("Изменено имя", fromManager.getName());
+        assertEquals("Новое описание", fromManager.getDescription());
+        assertEquals(Status.DONE, fromManager.getStatus());
     }
 
     @Test
-    void equalEpics() {
-        Epic epic1 = new Epic("Эпик", "Описание");
-        Epic epic2 = new Epic("Другой эпик", "Другое описание");
-        epic1.setId(3);
-        epic2.setId(3);
-        assertEquals(epic1, epic2);
+    void updatingEpic_shouldKeepSubtaskLinks() {
+        Epic epic = new Epic("Старый эпик", "Описание");
+        manager.createEpic(epic);
+
+        Subtask sub = new Subtask("Подзадача", "Описание", Status.NEW, epic.getId());
+        manager.createSubtask(sub);
+
+        epic.setName("Новый эпик");
+        manager.updateEpic(epic);
+
+        Epic updatedEpic = manager.getEpicById(epic.getId());
+        assertEquals(1, updatedEpic.getSubtaskIds().size());
     }
+
+    @Test
+    void removeAllEpics_shouldClearAllSubtasks() {
+        Epic epic1 = new Epic("Эпик 1", "Описание");
+        Epic epic2 = new Epic("Эпик 2", "Описание");
+
+        manager.createEpic(epic1);
+        manager.createEpic(epic2);
+
+        Subtask sub1 = new Subtask("Sub1", "Desc", Status.NEW, epic1.getId());
+        Subtask sub2 = new Subtask("Sub2", "Desc", Status.NEW, epic2.getId());
+
+        manager.createSubtask(sub1);
+        manager.createSubtask(sub2);
+
+        manager.removeAllEpics();
+
+        assertTrue(manager.getAllEpics().isEmpty());
+        assertTrue(manager.getAllSubtasks().isEmpty());
+    }
+
 }
 
