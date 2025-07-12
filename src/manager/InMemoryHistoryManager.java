@@ -14,7 +14,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node prev;
         Node next;
 
-        public Node(Node prev, Task task, Node next){
+        public Node(Node prev, Task task, Node next) {
             this.task = task;
             this.prev = prev;
             this.next = next;
@@ -22,6 +22,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
     private Node head;
     private Node tail;
+
 
     private final Map<Integer, Node> history = new HashMap();
 
@@ -31,7 +32,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail.next = newNode;
         else
             head = newNode;
-        
         tail = newNode;
         history.put(task.getId(), newNode);
     }
@@ -39,7 +39,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node current = head;
-        while(current != null) {
+        while (current != null) {
             tasks.add(current.task);
             current = current.next;
         }
