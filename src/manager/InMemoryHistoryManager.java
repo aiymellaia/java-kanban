@@ -20,6 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             this.next = next;
         }
     }
+
     private Node head;
 
     private Node tail;
