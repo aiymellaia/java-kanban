@@ -203,5 +203,17 @@ class InMemoryTaskManagerTest {
         assertTrue(manager.getAllSubtasks().isEmpty());
     }
 
+    @Test
+    void taskShouldBeRemovedFromHistoryOnDelete() {
+        Task task = new Task("DeleteTask", "Test delete", Status.NEW);
+        manager.createTask(task);
+        manager.getTaskById(task.getId());
+
+        assertEquals(1, manager.getHistory().size());
+
+        manager.deleteTaskById(task.getId());
+
+        assertTrue(manager.getHistory().isEmpty());
+    }
 }
 
