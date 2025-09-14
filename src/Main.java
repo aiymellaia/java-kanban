@@ -1,36 +1,30 @@
-import manager.Managers;
-import manager.TaskManager;
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
+import manager.FileBackedTaskManager;
+import model.*;
+
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+        File file = new File("tasks.csv");
 
-        Task task1 = new Task("Задача 1", "Описание 1", Status.NEW);
-        Task task2 = new Task("Задача 2", "Описание 2", Status.IN_PROGRESS);
-        manager.createTask(task1);
-        manager.createTask(task2);
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
-        Epic epic = new Epic("Эпик 1", "Описание эпика");
+        Task task = new Task("Сходить в магазин", "Купить хлеб", Status.NEW);
+        manager.createTask(task);
+
+        Epic epic = new Epic("Переезд", "Собрать вещи");
         manager.createEpic(epic);
 
-        Subtask sub1 = new Subtask("Подзадача 1", "Описание подзадачи", Status.NEW, epic.getId());
-        Subtask sub2 = new Subtask("Подзадача 2", "Описание подзадачи", Status.DONE, epic.getId());
-        manager.createSubtask(sub1);
-        manager.createSubtask(sub2);
+        Subtask sub = new Subtask("Упаковать коробки", "Сложить одежду", Status.NEW, epic.getId());
+        manager.createSubtask(sub);
 
-        manager.getTaskById(task1.getId());
-        manager.getTaskById(task2.getId());
-        manager.getEpicById(epic.getId());
-        manager.getSubtaskById(sub1.getId());
-        manager.getSubtaskById(sub2.getId());
+        System.out.println("Файл сохранён в: " + file.getAbsolutePath());
 
-        System.out.println("История просмотров:");
-        for (Task task : manager.getHistory()) {
-            System.out.println(task);
-        }
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(file);
+
+        System.out.println("Задачи после загрузки:");
+        System.out.println(loaded.getAllTasks());
+        System.out.println(loaded.getAllEpics());
+        System.out.println(loaded.getAllSubtasks());
     }
 }

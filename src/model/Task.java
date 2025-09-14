@@ -12,6 +12,11 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description) {
+        this(name, description, Status.NEW);
+    }
+
+
     public int getId() {
         return id;
     }
@@ -36,6 +41,9 @@ public class Task {
         return description;
     }
 
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
 
     @Override
     public boolean equals(Object obj) {

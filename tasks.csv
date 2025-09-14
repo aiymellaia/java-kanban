@@ -1,0 +1,4 @@
+id,type,name,status,description,epic
+1,TASK,Сходить в магазин,NEW,Купить хлеб,
+2,EPIC,Переезд,NEW,Собрать вещи,
+3,SUBTASK,Упаковать коробки,NEW,Сложить одежду,2
