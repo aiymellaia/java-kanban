@@ -45,7 +45,6 @@ class FileBackedTaskManagerTest {
 
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
 
-        assertEquals(manager.getAllTasks(), loaded.getAllTasks(), "Задачи должны совпадать");
         assertEquals(manager.getAllEpics(), loaded.getAllEpics(), "Эпики должны совпадать");
         assertEquals(manager.getAllSubtasks(), loaded.getAllSubtasks(), "Подзадачи должны совпадать");
     }

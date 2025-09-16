@@ -18,13 +18,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write("id,type,name,status,description,epic\n");
 
             for (Task task : getAllTasks()) {
-                writer.write(toString(task) + "\n");
+                writer.write(CSVTaskConverter.taskToString(task) + "\n");
             }
             for (Epic epic : getAllEpics()) {
-                writer.write(toString(epic) + "\n");
+                writer.write(CSVTaskConverter.taskToString(epic) + "\n");
             }
             for (Subtask subtask : getAllSubtasks()) {
-                writer.write(toString(subtask) + "\n");
+                writer.write(CSVTaskConverter.taskToString(subtask) + "\n");
             }
 
         } catch (IOException e) {
@@ -32,68 +32,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private String toString(Task task) {
-        String base = String.format("%d,%s,%s,%s,%s",
-                task.getId(),
-                task.getType(),
-                task.getName(),
-                task.getStatus(),
-                task.getDescription());
-
-        if (task instanceof Subtask) {
-            return base + "," + ((Subtask) task).getEpicId();
-        }
-        return base + ",";
-    }
-
-    private Task fromString(String line) {
-        String[] fields = line.split(",");
-        int id = Integer.parseInt(fields[0]);
-        String type = fields[1];
-        String name = fields[2];
-        Status status = Status.valueOf(fields[3]);
-        String description = fields[4];
-
-        switch (type) {
-            case "TASK":
-                Task task = new Task(name, description);
-                task.setId(id);
-                task.setStatus(status);
-                return task;
-            case "EPIC":
-                Epic epic = new Epic(name, description);
-                epic.setId(id);
-                epic.setStatus(status);
-                return epic;
-            case "SUBTASK":
-                int epicId = Integer.parseInt(fields[5]);
-                Subtask subtask = new Subtask(name, description, epicId);
-                subtask.setId(id);
-                subtask.setStatus(status);
-                return subtask;
-            default:
-                throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
-        }
-    }
-
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
-            String header = reader.readLine();
+            reader.readLine();
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.isBlank()) continue;
-                Task task = manager.fromString(line);
-                switch (task.getType()) {
-                    case TASK:
-                        manager.createTask(task);
-                        break;
-                    case EPIC:
-                        manager.createEpic((Epic) task);
-                        break;
-                    case SUBTASK:
-                        manager.createSubtask((Subtask) task);
-                        break;
+                Task task = CSVTaskConverter.fromString(line);
+
+                manager.tasks.put(task.getId(), task);
+                manager.nextId = Math.max(manager.nextId, task.getId());
+
+                if (task.getType() == TaskType.EPIC) {
+                    manager.epics.put(task.getId(), (Epic) task);
+                } else if (task.getType() == TaskType.SUBTASK) {
+                    Subtask subtask = (Subtask) task;
+                    manager.subtasks.put(task.getId(), subtask);
+                    Epic epic = manager.epics.get(subtask.getEpicId());
+                    if (epic != null) {
+                        epic.addSubtaskId(subtask.getId());
+                    }
                 }
             }
         } catch (IOException e) {
