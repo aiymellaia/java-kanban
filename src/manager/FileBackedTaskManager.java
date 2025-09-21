@@ -39,27 +39,37 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.isBlank()) continue;
+
                 Task task = CSVTaskConverter.fromString(line);
 
-                manager.tasks.put(task.getId(), task);
-                manager.nextId = Math.max(manager.nextId, task.getId());
+                switch (task.getType()) {
+                    case TASK:
+                        manager.tasks.put(task.getId(), task);
+                        break;
+                    case EPIC:
+                        manager.epics.put(task.getId(), (Epic) task);
+                        break;
+                    case SUBTASK:
+                        Subtask subtask = (Subtask) task;
+                        manager.subtasks.put(task.getId(), subtask);
 
-                if (task.getType() == TaskType.EPIC) {
-                    manager.epics.put(task.getId(), (Epic) task);
-                } else if (task.getType() == TaskType.SUBTASK) {
-                    Subtask subtask = (Subtask) task;
-                    manager.subtasks.put(task.getId(), subtask);
-                    Epic epic = manager.epics.get(subtask.getEpicId());
-                    if (epic != null) {
-                        epic.addSubtaskId(subtask.getId());
-                    }
+                        Epic epic = manager.epics.get(subtask.getEpicId());
+                        if (epic != null) {
+                            epic.addSubtaskId(subtask.getId());
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Неизвестный тип задачи: " + task.getType());
                 }
+
+                manager.nextId = Math.max(manager.nextId, task.getId());
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при загрузке данных из файла", e);
         }
         return manager;
     }
+
 
     @Override
     public void createTask(Task task) {
