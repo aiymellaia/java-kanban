@@ -56,7 +56,7 @@ public class HttpTaskServerSubtaskTest {
         subtask.setDuration(Duration.ofMinutes(15));
         subtask.setStartTime(LocalDateTime.now());
 
-        String json = HttpTaskServer.getGson().toJson(subtask);
+        String json = GsonAdapters.createGson().toJson(subtask);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
@@ -158,7 +158,8 @@ public class HttpTaskServerSubtaskTest {
         Subtask sub1 = new Subtask("Sub1", "Desc", Status.NEW, epicId);
         sub1.setStartTime(LocalDateTime.now());
         sub1.setDuration(Duration.ofMinutes(60));
-        String json1 = HttpTaskServer.getGson().toJson(sub1);
+
+        String json1 = GsonAdapters.createGson().toJson(sub1);
 
         HttpRequest request1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
@@ -171,7 +172,8 @@ public class HttpTaskServerSubtaskTest {
         Subtask sub2 = new Subtask("Sub2", "Desc", Status.NEW, epicId);
         sub2.setStartTime(sub1.getStartTime().plusMinutes(30));
         sub2.setDuration(Duration.ofMinutes(30));
-        String json2 = HttpTaskServer.getGson().toJson(sub2);
+
+        String json2 = GsonAdapters.createGson().toJson(sub2);
 
         HttpRequest request2 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
@@ -186,7 +188,9 @@ public class HttpTaskServerSubtaskTest {
     @Test
     public void testAddSubtaskWithOverlapAdvanced() throws IOException, InterruptedException {
         Epic epic = new Epic("Epic Advanced", "Desc");
-        String epicJson = HttpTaskServer.getGson().toJson(epic);
+
+        String epicJson = GsonAdapters.createGson().toJson(epic);
+
         HttpRequest epicRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))
                 .POST(HttpRequest.BodyPublishers.ofString(epicJson))
@@ -200,8 +204,7 @@ public class HttpTaskServerSubtaskTest {
         Subtask sub1 = new Subtask("Sub1", "Desc", Status.NEW, epicId);
         sub1.setStartTime(LocalDateTime.now());
         sub1.setDuration(Duration.ofMinutes(60));
-        String sub1Json = HttpTaskServer.getGson().toJson(sub1);
-
+        String sub1Json = GsonAdapters.createGson().toJson(sub1);
         HttpRequest request1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(sub1Json))
@@ -213,8 +216,7 @@ public class HttpTaskServerSubtaskTest {
         Subtask subOverlapFull = new Subtask("SubOverlapFull", "Desc", Status.NEW, epicId);
         subOverlapFull.setStartTime(sub1.getStartTime().plusMinutes(10));
         subOverlapFull.setDuration(Duration.ofMinutes(30));
-        String jsonOverlapFull = HttpTaskServer.getGson().toJson(subOverlapFull);
-
+        String jsonOverlapFull = GsonAdapters.createGson().toJson(subOverlapFull);
         HttpRequest requestOverlapFull = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(jsonOverlapFull))
@@ -226,8 +228,7 @@ public class HttpTaskServerSubtaskTest {
         Subtask subOverlapPartial = new Subtask("SubOverlapPartial", "Desc", Status.NEW, epicId);
         subOverlapPartial.setStartTime(sub1.getStartTime().plusMinutes(50));
         subOverlapPartial.setDuration(Duration.ofMinutes(20));
-        String jsonOverlapPartial = HttpTaskServer.getGson().toJson(subOverlapPartial);
-
+        String jsonOverlapPartial = GsonAdapters.createGson().toJson(subOverlapPartial);
         HttpRequest requestOverlapPartial = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(jsonOverlapPartial))
@@ -237,7 +238,7 @@ public class HttpTaskServerSubtaskTest {
         assertEquals(406, responseOverlapPartial.statusCode(), "Должен быть 406 при частичном пересечении");
 
         Subtask subNoTime = new Subtask("SubNoTime", "Desc", Status.NEW, epicId);
-        String jsonNoTime = HttpTaskServer.getGson().toJson(subNoTime);
+        String jsonNoTime = GsonAdapters.createGson().toJson(subNoTime);
 
         HttpRequest requestNoTime = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
@@ -250,7 +251,7 @@ public class HttpTaskServerSubtaskTest {
         Subtask subNullDuration = new Subtask("SubNullDuration", "Desc", Status.NEW, epicId);
         subNullDuration.setStartTime(sub1.getStartTime().plusMinutes(200));
         subNullDuration.setDuration(null);
-        String jsonNullDuration = HttpTaskServer.getGson().toJson(subNullDuration);
+        String jsonNullDuration = GsonAdapters.createGson().toJson(subNullDuration);
 
         HttpRequest requestNullDuration = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
@@ -270,7 +271,8 @@ public class HttpTaskServerSubtaskTest {
         Subtask sub1 = new Subtask("Sub1", "Desc", Status.NEW, epicId);
         sub1.setStartTime(LocalDateTime.now());
         sub1.setDuration(Duration.ofMinutes(60));
-        String json1 = HttpTaskServer.getGson().toJson(sub1);
+        String json1 = GsonAdapters.createGson().toJson(sub1);
+
         HttpRequest req1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(json1))
@@ -282,7 +284,8 @@ public class HttpTaskServerSubtaskTest {
         Subtask sub2 = new Subtask("SubOverlap", "Desc", Status.NEW, epicId);
         sub2.setStartTime(sub1.getStartTime().plusMinutes(30));
         sub2.setDuration(Duration.ofMinutes(30));
-        String json2 = HttpTaskServer.getGson().toJson(sub2);
+        String json2 = GsonAdapters.createGson().toJson(sub2);
+
         HttpRequest req2 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(json2))

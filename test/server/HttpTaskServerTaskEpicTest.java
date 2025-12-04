@@ -50,7 +50,7 @@ public class HttpTaskServerTaskEpicTest {
         task.setDuration(Duration.ofMinutes(30));
         task.setStartTime(LocalDateTime.now());
 
-        String json = HttpTaskServer.getGson().toJson(task);
+        String json = GsonAdapters.createGson().toJson(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/tasks"))
@@ -101,7 +101,7 @@ public class HttpTaskServerTaskEpicTest {
     @Test
     public void testAddEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Epic 1", "Description");
-        String json = HttpTaskServer.getGson().toJson(epic);
+        String json = GsonAdapters.createGson().toJson(epic);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))

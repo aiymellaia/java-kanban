@@ -52,7 +52,7 @@ public class HttpTaskServerTest {
         task.setDuration(Duration.ofMinutes(10));
         task.setStartTime(LocalDateTime.now());
 
-        String taskJson = HttpTaskServer.getGson().toJson(task);
+        String taskJson = GsonAdapters.createGson().toJson(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/tasks"))
@@ -138,7 +138,7 @@ public class HttpTaskServerTest {
         Task task = new Task("Task 1", "Desc");
         task.setDuration(Duration.ofMinutes(10));
         task.setStartTime(LocalDateTime.now());
-        String json = HttpTaskServer.getGson().toJson(task);
+        String json = GsonAdapters.createGson().toJson(task);
 
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/tasks"))
@@ -201,7 +201,7 @@ public class HttpTaskServerTest {
         task2.setStartTime(task1.getStartTime().plusMinutes(30));
         task2.setDuration(Duration.ofMinutes(30));
 
-        String json = HttpTaskServer.getGson().toJson(task2);
+        String json = GsonAdapters.createGson().toJson(task2);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/tasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(json))

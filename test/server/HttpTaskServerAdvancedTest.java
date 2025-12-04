@@ -49,7 +49,7 @@ public class HttpTaskServerAdvancedTest {
     @Test
     public void testGetSubtasksOfEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Epic X", "Epic Desc");
-        String epicJson = HttpTaskServer.getGson().toJson(epic);
+        String epicJson = GsonAdapters.createGson().toJson(epic);
 
         HttpRequest epicRequest = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/epics"))
@@ -64,12 +64,14 @@ public class HttpTaskServerAdvancedTest {
         Subtask sub1 = new Subtask("Sub1", "Desc", Status.NEW, epicId);
         sub1.setStartTime(LocalDateTime.now());
         sub1.setDuration(Duration.ofMinutes(30));
-        String sub1Json = HttpTaskServer.getGson().toJson(sub1);
+        String sub1Json = GsonAdapters.createGson().toJson(sub1);
+
 
         Subtask sub2 = new Subtask("Sub2", "Desc", Status.NEW, epicId);
         sub2.setStartTime(LocalDateTime.now().plusMinutes(40));
         sub2.setDuration(Duration.ofMinutes(20));
-        String sub2Json = HttpTaskServer.getGson().toJson(sub2);
+        String sub2Json = GsonAdapters.createGson().toJson(sub2);
+
 
         HttpRequest req1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/subtasks"))

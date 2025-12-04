@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class BaseHttpHandler {
+
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
@@ -22,6 +23,11 @@ public class BaseHttpHandler {
         exchange.sendResponseHeaders(404, resp.length);
         exchange.getResponseBody().write(resp);
         exchange.getResponseBody().flush();
+        exchange.close();
+    }
+
+    protected void sendMethodNotAllowed(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(405, -1);
         exchange.close();
     }
 
@@ -43,5 +49,10 @@ public class BaseHttpHandler {
         exchange.getResponseBody().write(resp);
         exchange.getResponseBody().flush();
         exchange.close();
+    }
+
+    protected int extractIdFromPath(String path) {
+        String[] parts = path.split("/");
+        return Integer.parseInt(parts[2]);
     }
 }
